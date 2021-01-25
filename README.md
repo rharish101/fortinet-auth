@@ -13,7 +13,7 @@ To start it, run the script as follows:
 This will ask you to type your username and password in the terminal.
 If you want to run this script as part of an automated process, you can specify the username and password as CLI arguments with the `--username` and `--password` flags respectively.
 Then it tries to authenticate with these credentials.
-If the username and password are incorrent, the script will raise an exception.
+If the username and password are incorrect, the script will raise an exception.
 If there is a connection error, then it waits for some time before retrying.
 
 Once authenticated, the script stays in the foreground and periodically pings the keep-alive URL so that you aren't logged out.
