@@ -21,3 +21,5 @@ repos:
     rev: v0.971
     hooks:
       - id: mypy
+ci:
+  autoupdate_schedule: quarterly
