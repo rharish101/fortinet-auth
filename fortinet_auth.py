@@ -13,7 +13,7 @@ from urllib.error import URLError
 from urllib.parse import urlencode, urlparse
 from urllib.request import urlopen
 
-LOG_FMT = "%(asctime)s %(levelname)s %(message)s"  # format for logging
+LOG_FMT = "%(asctime)s %(levelname)s %(message)s"  # Format for logging
 
 
 class AuthenticationFailure(Exception):
@@ -26,13 +26,13 @@ class AuthenticationFailure(Exception):
 class Authenticator:
     """Class for authenticating to FortiNet."""
 
-    # Using HTTP as redirection to gateway raises SSL errors with HTTPS
+    # Using HTTP as redirection to gateway raises SSL errors with HTTPS.
     TEST_URL = "http://www.imdb.com"
 
-    # All times are in seconds
-    TIMEOUT = 5  # timeout for GET/POST requests
-    RETRY_SLEEP = 20  # pause before retrying login/keep-alive if they fail
-    KEEPALIVE_SLEEP = 60  # pause b/w two pings of the keep-alive URL
+    # All times are in seconds.
+    TIMEOUT = 5  # Timeout for GET/POST requests
+    RETRY_SLEEP = 20  # Pause before retrying login/keep-alive if they fail
+    KEEPALIVE_SLEEP = 60  # Pause b/w two pings of the keep-alive URL
 
     # Errors indicating that the request failed
     HTTP_ERRORS = (
@@ -62,7 +62,7 @@ class Authenticator:
         else:
             self.logger = logger
 
-        # This will later store the keep-alive and logout URLs
+        # This will later store the keep-alive and logout URLs.
         self.urls: Dict[str, str] = {}
 
     def __del__(self) -> None:
@@ -82,28 +82,28 @@ class Authenticator:
 
         parsed = urlparse(redir_url)
         if parsed.path != "/fgtauth":
-            # We weren't redirected to a FortiNet authentication page
+            # We weren't redirected to a FortiNet authentication page.
             self.logger.info("Seems already authenticated")
             return
 
-        # Redirected to a FortiNet authentication page
+        # Redirected to a FortiNet authentication page.
         params: Dict[str, str] = {
             "username": self.username,
             "password": self.password,
             "magic": parsed.query,
         }
-        data = urlencode(params).encode("utf8")  # POST data must be bytes
+        data = urlencode(params).encode("utf8")  # POST data must be bytes.
 
-        # "Content-Type" headers are automatically added by Python
+        # "Content-Type" headers are automatically added by Python.
         with urlopen(redir_url, data=data, timeout=self.TIMEOUT) as resp:
-            content = resp.read().decode("utf8")  # convert bytes to str
+            content = resp.read().decode("utf8")  # Convert bytes to str.
 
         # List of all URLs in the HTML response that are of the form:
         # href="http://url.to/some/page.html"
         all_urls = re.findall(r'href="([^"]+)"', content)
 
         if len(all_urls) == 0:
-            # This mostly means that the username and/or password wrong
+            # This mostly means that the username and/or password wrong.
             raise AuthenticationFailure("Failed to authenticate")
 
         # If this assertion fails, then it means that FortiNet has
@@ -128,7 +128,7 @@ class Authenticator:
         try:
             with urlopen(self.urls["keepAlive"], timeout=self.TIMEOUT) as resp:
                 resp_url = resp.geturl()
-            # Ensure that keep-alive succeeded
+            # Ensure that keep-alive succeeded.
             assert urlparse(resp_url).path == "/keepalive"
 
         except self.HTTP_ERRORS + (AssertionError,):
@@ -172,20 +172,22 @@ class Authenticator:
                     "retrying in {} seconds".format(self.RETRY_SLEEP)
                 )
 
-            if self.urls:  # this will not be empty if authentication succeeded
-                break  # login succeeded, so break out of the loop
+            if (
+                self.urls
+            ):  # This will not be empty if authentication succeeded.
+                break  # Login succeeded, so break out of the loop.
             else:
                 sleep(self.RETRY_SLEEP)
 
-        # Wait for some time before pinging keep-alive
+        # Wait for some time before pinging keep-alive.
         sleep(self.KEEPALIVE_SLEEP)
 
-        # Loop forever and keep the login alive
+        # Loop forever and keep the login alive.
         while True:
             if self.keep_alive():
-                sleep(self.KEEPALIVE_SLEEP)  # keep-alive succeeded
+                sleep(self.KEEPALIVE_SLEEP)  # Keep-alive succeeded.
             else:
-                sleep(self.RETRY_SLEEP)  # keep-alive failed
+                sleep(self.RETRY_SLEEP)  # Keep-alive failed.
 
 
 def main(args: Namespace) -> None:
@@ -200,12 +202,12 @@ def main(args: Namespace) -> None:
     if password is None:
         password = getpass("Enter password: ")
 
-    if args.quiet:  # log everything with custom format
+    if args.quiet:  # Log everything with custom format.
         logging.basicConfig(format=LOG_FMT)
-    else:  # log everything with level >= INFO and with custom format
+    else:  # Log everything with level >= INFO and with custom format.
         logging.basicConfig(format=LOG_FMT, level=logging.INFO)
 
-    # Gracefully exit with a logout on SIGTERM
+    # Gracefully exit with a logout on SIGTERM.
     signal(SIGTERM, lambda _, __: exit())
 
     auth = Authenticator(username, password)
