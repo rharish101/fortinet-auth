@@ -31,10 +31,8 @@ class Authenticator:
 
     # All times are in seconds
     TIMEOUT = 5  # timeout for GET/POST requests
-    SLEEP = {
-        "retry": 20,  # pause before retrying login/keep-alive if they fail
-        "keepAlive": 60,  # pause b/w two pings of the keep-alive URL
-    }
+    RETRY_SLEEP = 20  # pause before retrying login/keep-alive if they fail
+    KEEPALIVE_SLEEP = 60  # pause b/w two pings of the keep-alive URL
 
     # Errors indicating that the request failed
     HTTP_ERRORS = (
@@ -171,23 +169,23 @@ class Authenticator:
             except self.HTTP_ERRORS:
                 self.logger.warning(
                     "Encountered error when logging in; "
-                    "retrying in {} seconds".format(self.SLEEP["retry"])
+                    "retrying in {} seconds".format(self.RETRY_SLEEP)
                 )
 
             if self.urls:  # this will not be empty if authentication succeeded
                 break  # login succeeded, so break out of the loop
             else:
-                sleep(self.SLEEP["retry"])
+                sleep(self.RETRY_SLEEP)
 
         # Wait for some time before pinging keep-alive
-        sleep(self.SLEEP["keepAlive"])
+        sleep(self.KEEPALIVE_SLEEP)
 
         # Loop forever and keep the login alive
         while True:
             if self.keep_alive():
-                sleep(self.SLEEP["keepAlive"])  # keep-alive succeeded
+                sleep(self.KEEPALIVE_SLEEP)  # keep-alive succeeded
             else:
-                sleep(self.SLEEP["retry"])  # keep-alive failed
+                sleep(self.RETRY_SLEEP)  # keep-alive failed
 
 
 def main(args: Namespace) -> None:
