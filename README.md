@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2021 Harish Rajagopal <harish.rajagopals@gmail.com>
+
+SPDX-License-Identifier: MIT
+-->
+
 # Fortinet Firewall Authenticator
 
 This is a script that logs in to a Fortinet firewall, such as one set up for public internet in colleges.
@@ -43,3 +49,10 @@ Thus, this needs to be set up only when one intends to commit changes to git.
 
 **NOTE**: You need to be inside the virtual environment where you installed the above dependencies every time you commit.
 However, this is not required if you have installed pre-commit globally.
+
+## Licenses
+This repository uses [REUSE](https://reuse.software/) to document licenses.
+Each file has a header containing copyright and license information.
+The license files that are used in this project can be found in the [LICENSES](./LICENSES) directory.
+
+The MIT license is placed in [LICENSE](./LICENSE), to signify that it constitutes the majority of the codebase, and for compatibility with GitHub.
