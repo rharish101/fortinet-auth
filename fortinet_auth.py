@@ -13,7 +13,7 @@ from http.client import RemoteDisconnected
 from signal import SIGTERM, signal
 from socket import timeout
 from time import sleep
-from typing import Dict, Optional
+from typing import Dict, NoReturn, Optional
 from urllib.error import URLError
 from urllib.parse import urlencode, urlparse
 from urllib.request import urlopen
@@ -152,7 +152,7 @@ class Authenticator:
         except self.HTTP_ERRORS:
             self.logger.warning("Failed to log out")
 
-    def open_session(self) -> None:
+    def open_session(self) -> NoReturn:
         """Open an authentication session and keep it open until closed.
 
         This session can be closed by deleting an instance of this object. This
